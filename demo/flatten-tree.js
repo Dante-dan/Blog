@@ -36,6 +36,8 @@ function flattenTree(data, nodeHandle) {
   return flattenTreeByRecursion(data, nodeHandle);
 }
 
+export default flattenTree;
+
 /**
  * @example
  * flattenTree(tree)
