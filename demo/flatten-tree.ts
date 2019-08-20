@@ -6,45 +6,47 @@
  * */
 
 /**
- * @typedef treeNode
+ * @typedef TreeNode
  * @type {{children: [*], id: string, value: string}}
  */
 
 /**
  * flattenTreeByRecursion
  * @constructor
- * @param {[treeNode]} data (origin tree)
+ * @param {[TreeNode]} data (origin tree)
  * @param {function} nodeHandle 用于将树节点处理成，treeNode 的格式 (call node transform to treeNode)
  * @param {[]} result 用于向下传递以遍历的节点 (result array)
  * @returns {[]|Array}
  */
 function flattenTreeByRecursion(data, nodeHandle = value => value, result = []) {
-    if (!Array.isArray(data)) return [];
-    const queue = [...data];
-    queue.forEach((treeNode) => {
-      const currNode = nodeHandle(treeNode);
-      if (currNode && Array.isArray(currNode.children)) {
-        flattenTreeByRecursion(currNode.children.map(node => ({...node, parentId: currNode.id})), value => value, result);
-      } else {
-        result.push(currNode);
-      }
-    });
+  if (!Array.isArray(data)) return [];
+  const queue = [...data];
+  queue.forEach((treeNode) => {
+    const currNode = nodeHandle(treeNode);
+    if (currNode && Array.isArray(currNode.children)) {
+      flattenTreeByRecursion(currNode.children.map(node => ({...node, parentId: currNode.id})), value => value, result);
+      result.push((() => {delete currNode.children; return currNode})());
+    } else {
+      result.push(currNode);
+    }
+  });
   return result;
 }
 
-function flattenTree(data, nodeHandle) {
+function flattenTree(data, nodeHandle = node => node) {
   return flattenTreeByRecursion(data, nodeHandle);
 }
 
-export default flattenTree;
+// export default flattenTree;
 
 /**
  * @example
  * flattenTree(tree)
  */
 const tree = [
-    {
-        id: '1',
+  {
+      id: '1',
+      value: '1',
         children: [
             {
                 id: '1-1',
@@ -56,6 +58,7 @@ const tree = [
             },
             {
                 id: '1-3',
+              value: '1-3',
                 children: [
                     {
                         id: '1-3-1',
@@ -67,6 +70,7 @@ const tree = [
                     },
                     {
                         id: '1-3-3',
+                        value: '1-3-3',
                         children: [
                             {
                                 id: '1-3-3-1',
@@ -86,6 +90,7 @@ const tree = [
             },
             {
                 id: '1-4',
+                value: '1-4',
                 children: [
                     {
                         id: '1-4-1',
@@ -99,14 +104,17 @@ const tree = [
             }
         ],
     },
-    {
+  {
         id: '2',
+        value: '2',
         children: [
             {
                 id: '2-3',
+                value: '2-3',
                 children: [
                     {
                         id: '2-3-3',
+                        value: '2-3-3',
                         children: [
                             {
                                 id: '2-3-3-1',
