@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加水印</title>
+</head>
+<body>
+<main>
+ 
+ <input type="file" id="file" accept="image/*" />
+ <input type="text" id="text" placeholder="请输入水印" />
+ <input type="text" id="angle" placeholder="请输入旋转角度" />
+ <div id="mask"></div>
+ <img src="" id="img" />
+</main>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js"></script>
+<script type="text/javascript">
+	$('#file').change((e) => {
+		const tempPath = URL.createObjectURL(e.target.files[0]);
+		$("#img").attr('src',URL.createObjectURL(event.target.files[0]));
+    getImgPosition();
+	});
+
+  $('#text').change((e) => {
+    const text = e.target.value;
+    $('#mask').html(text);
+    getImgPosition();
+  });
+
+  $('#angle').change((e) => {
+    const angle = e.target.value;
+    $('#mask').css('transform', `rotate(${angle}deg)`);
+  });
+
+  function getImgPosition() {
+    const imgTop = $('#img').offset().top;
+    const imgLeft = $('#img').offset().left;
+    $('#mask').height($('#img').height());
+    $('#mask').width($('#img').width());
+    $('#mask').offset({top: imgTop, left: imgLeft});
+  }
+
+</script>
+<style type="text/css">
+  #mask {
+    position: absolute;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    opacity: 0.5;
+  }
+</style>
+</html>
