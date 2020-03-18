@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加文字</title>
+</head>
+<body>
+<main>
+  <input type="file" id="file" accept="image/*" />
+  <input type="text" id="text" placeholder="请输入文字" />
+  <input type="text" id="scale" placeholder="请输入缩放倍数" />
+  <canvas id="canvas">您的浏览器尚不支持canvas</canvas>
+  <canvas id="watermark-canvas">您的浏览器尚不支持canvas</canvas>
+</main>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js"></script>
+<script type="text/javascript">
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  var watermarkCanvas = document.getElementById("watermark-canvas");
+  var watermarkContext = watermarkCanvas.getContext("2d");
+  var textInputDom = document.getElementById('text');
+  var scaleInputDom = document.getElementById('scale');
+  var fileInputDom = document.getElementById('file');
+  var image = new Image();
+  var imgW=1080;
+  var imgH=1440;
+  var scale = 1;
+  var text = '方向A-';
+  canvas.width = 1080;
+  canvas.height = 1440;
+  watermarkCanvas.width = 1080;
+  watermarkCanvas.height = 120;
+  watermarkContext.font = "normal 120px SimSun";
+  watermarkContext.lineWidth = "1";
+  watermarkContext.fillStyle = "#000";
+  watermarkContext.textBaseline = "top";
+  textInputDom.value = text;
+  scaleInputDom.value = scale;
+
+  function handleFileChange(e) {
+    image.src = URL.createObjectURL(e.target.files[0]);
+    image.onload = function(){
+      drawImage(image);
+    }
+  }
+  fileInputDom.addEventListener('change', handleFileChange);
+
+  function handleTextInputChange(e) {
+    text = e.target.value;
+    watermarkContext.fillText(text , 0 , 0 );
+    drawImage(image);
+  }
+  textInputDom.addEventListener('change', handleTextInputChange);
+
+  function handleScaleChange(e) {
+    scale = e.target.value;
+    drawImage();
+  }
+  scaleInputDom.addEventListener('change', handleScaleChange);
+
+  function drawImage(image){
+    var imageWidth = imgW * scale; //imgW，imgH是图片的大小
+    var imageHeight =imgH * scale;
+
+    var x = canvas.width /2 - imageWidth / 2;
+    var y = canvas.height / 2 - imageHeight / 2;
+
+    context.clearRect( 0 , 0 , canvas.width , canvas.height );
+    context.drawImage( image , x , y , imageWidth , imageHeight );
+    if(scale<1){
+      context.drawImage(watermarkCanvas,imageWidth - watermarkCanvas.width+x,imageHeight-watermarkCanvas.height+y);
+      //缩放比例小于1时，图片小于canvas画布，用图片的宽高减去水印的宽高+图片在画布中的宽高就可以固定水印在右下角
+    }else{
+      //用画布的宽高-水印的宽高，就可以固定水印在右下角
+      context.drawImage(watermarkCanvas,0, watermarkCanvas.height - 80);
+    }
+  }
+
+</script>
+<style type="text/css">
+  #canvas{
+    display:block;
+    margin:0 auto;
+    border:1px solid #aaa;
+  }
+  #watermark-canvas{
+    display:none;
+  }
+</style>
+</html>
