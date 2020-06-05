@@ -191,6 +191,8 @@ console.log(vm.arr); // [empty, 12]
 
 > Array 是一种特殊的Object, 如果直接对 Array 的指定位置进行监听也可以监听到.
 
+
+
 ```javascript
 const vm = [];
 
@@ -292,6 +294,9 @@ Proxy可以监听整个对象, 而且可以感知到通过数组下标赋值的�
 # 结束
 
 通过一个最简单的双向绑定, 复习了 **对象的两类属性** , 其中访问器属性可以帮助我们实现对对象值的劫持.
+
 通过 `defineProperty` 劫持对象, 实现最简单的双向绑定.
+
 为了解决 `defineProperty` 带来的弊端, 使用 `Proxy` 实现了同等效果的双向绑定.
+
 横向对比学习了 `defineProxy` 和 `Proxy` 的区别和共同点.
