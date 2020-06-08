@@ -46,8 +46,8 @@ function taskController(fns, timers) {
   }
 }
 
-const a = (a) => console.log('a');
-const b = (b) => console.log('b');
-const c = (c) => console.log('c');
+const a = () => console.log('a');
+const b = () => console.log('b');
+const c = () => console.log('c');
 chained([a, b, c])();
 
