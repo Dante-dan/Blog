@@ -1,2 +1,3 @@
 theme: jekyll-theme-cayman
-favicon: ./favicon.ico
+collections:
+  icon: favicon.ico
