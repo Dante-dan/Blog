@@ -36,23 +36,131 @@ console.log(resultStr);
   // 任务调度器
   const orderTasks = [];
   const timerTasks = [];
-  const startOrderTask = (task) => {
-    if(Array.isArray(task) && task.length > 0) {
-      const current = task.pop();
-    } else {
-      console.log('顺序队列已经清空');
-      return [];
-    }
+  const timerIds = [];
+  const ORDER = Symbol('order')
+  const TIMER = Symbol('timer')
+  const startOrderTask = () => {
+    return new Promise((resolve, reject) => {
+      if(Array.isArray(orderTasks) && orderTasks.length > 0) {
+        const current = orderTasks.shift();
+        const { task, time } = current;
+        setTimeout(() => {
+          task.call();
+          resolve(startOrderTask());
+        }, time);
+      } else {
+        // console.log('顺序队列已经清空');
+      }
+    })
   };
-  const startTimerTask = (task) => {
-    if(Array.isArray(task) && task.length > 0) {
-
-    } else {
-      console.log('定时队列已经清空');
-      return [];
-    }
+  const startTimerTask = () => {
+    return new Promise((resolve, reject) => {
+      if(Array.isArray(timerTasks) && timerTasks.length > 0) {
+      timerTasks.forEach(item => {
+        const { task, time } = item;
+        setInterval(task, time)
+      })
+      } else {
+        // console.log('定时队列已执行');
+      }
+    })
   };
 
+  // 任务调度
+  function controller(tasks) {
+    // 任务队列
+    if(Array.isArray(tasks) && tasks.length > 0) {
+      tasks.forEach(task => controller(task));
+    } else {
+      // 单个任务
+      const { task, type, time } = tasks;
+      if(type === ORDER) {
+        if(typeof task === 'function') {
+          orderTasks.push({ task, type, time });
+        }
+      }
+      if(type === TIMER) {
+        if(typeof task === 'function') {
+          timerTasks.push({ task, type, time });
+        }
+      }
+    }
+  }
+  const a = () => console.log('a');
+  const b = () => console.log('b');
+  const c = () => console.log('c');
+  const d = () => console.log('d');
+
+  function case1() {
+    controller([
+      {
+        task: () => {
+          controller([
+            {task: () => {
+                a();
+                controller([
+                  {
+                    task: a, type: ORDER, time: 1000
+                  }
+                ])
+                startOrderTask();
+              }, type: ORDER, time: 5000},
+            {task: () => {
+                b();
+                controller([
+                  {
+                    task: b, type: ORDER, time: 3000
+                  }
+                ])
+                startOrderTask();
+              }, type: ORDER, time: 3000},
+          {task: b, type: ORDER, time: 3000}
+          ])
+          startOrderTask();
+        },
+        type: TIMER,
+        time: 14 * 1000
+      },
+    ]);
+  }
+  function case2() {
+    controller([
+      {
+        task: a, type: TIMER, time: 6000,
+      },
+      {
+        task: c, type: TIMER, time: 4000,
+      }
+    ]);
+    startTimerTask();
+  }
+  function case3() {
+    const order = [
+      {task: a, type: ORDER, time: 1000},
+      {task: b, type: ORDER, time: 3000},
+    ];
+    controller([
+      ...order,
+      {task: c, type: TIMER, time: 3000},
+      {task: d, type: TIMER, time: 4000},
+      {task: () => {
+          controller(order);
+          startOrderTask()
+        }, type: TIMER, time: 4000
+      }
+    ])
+    startOrderTask(orderTasks);
+    startTimerTask(timerTasks);
+  }
+  function case4() {
+    const order = [
+      {task: b, type: ORDER, time: 3000},
+      {task: c, type: ORDER, time: 3000},
+    ];
+    controller(order)
+    startOrderTask(orderTasks);
+  }
+  case1();
 }
 
 
