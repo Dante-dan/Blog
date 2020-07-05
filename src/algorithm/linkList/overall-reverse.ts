@@ -10,6 +10,15 @@ class LinkNode {
     this.val = value;
     this.next = null
   }
+  toString() {
+    let cur = this.next;
+    const stringArr = [];
+    while (cur) {
+      stringArr.push(cur.val);
+      cur = cur.next;
+    }
+    return stringArr.join(' -> ')
+  }
 }
 
 class LinkList {
@@ -38,8 +47,9 @@ class LinkList {
     }
     let next = cur.next;
     cur.next = pre;
-    pre.next = next;
-    return overallReverse(cur, next)
+    // 改变头指针指向
+    this.head = cur;
+    this.reverse(cur, next)
   }
   toString() {
     let cur = this.head;
@@ -51,10 +61,11 @@ class LinkList {
     return stringArr.join(' -> ')
   }
 }
-export default function overallReverse(pre, cur) {
+export default function overallReverse() {
   const linkedList = new LinkList([1, 2, 3, 4, 5]);
-  linkedList.reverse(linkedList.head, linkedList.head.next);
-  linkedList.toString();
+  linkedList.reverse(null, linkedList.head);
+  console.log(linkedList);
+  console.log(linkedList.toString());
 }
 
 overallReverse();
